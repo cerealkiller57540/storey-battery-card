@@ -108,7 +108,7 @@ The arc itself has about twenty `elec_*` settings (crackle speed, spark rate and
 
 **Some cards go blank on my Android phone.** Android WebViews keep at most 8 WebGL contexts per page. This card uses one, and gives it back when it leaves the screen. If you run many WebGL cards on one view, use `storey-battery-card` (SVG) on some of them.
 
-**Which theme is in the screenshots?** Neo Tokyo, from [Home-Assistant-Neon-Cards](https://github.com/cerealkiller57540/Home-Assistant-Neon-Cards). The card works with any theme.
+**Which theme is in the screenshots?** Neo Tokyo, the author's own dark theme (not published). The card works with any theme.
 
 ## 🌃 More neon cards
 
