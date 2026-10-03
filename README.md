@@ -102,6 +102,8 @@ The arc itself has about twenty `elec_*` settings (crackle speed, spark rate and
 
 ## ❓ FAQ
 
+**Which languages are supported?** English and French. The editor and the card texts follow your Home Assistant language: French if it is French, English otherwise. Reload the page after changing the language.
+
 **My battery is not a Storey.** That is fine. The drawing is a Storey, but any SOC + power pair works.
 
 **The arrow flickers between charging and discharging.** Raise `power_threshold`: small readings around zero then count as idle.

@@ -2625,6 +2625,108 @@ void main(){
     "Playfair Display",
     "Cinzel",
   ];
+/* ── i18n FR/EN : la clé est la chaîne française (le français s'affiche tel quel) ── */
+let _lang = 'en';
+const _EN = {
+ "Accent": "Accent",
+ "Afficher en-tête": "Show header",
+ "Amplitude ondulation": "Wave amplitude",
+ "Amplitude étincelles": "Spark amplitude",
+ "Arc électrique": "Electric arc",
+ "Aucune": "None",
+ "Auto — WebGL puis SVG": "Auto — WebGL, then SVG",
+ "Capteurs": "Sensors",
+ "Capteurs & modules": "Sensors & modules",
+ "Couleur charge": "Charge colour",
+ "Couleur de l'icône": "Icon colour",
+ "Couleur du glow": "Glow colour",
+ "Couleur décharge": "Discharge colour",
+ "Couleur glow": "Glow colour",
+ "Couleur icône": "Icon colour",
+ "Couleur titre": "Title colour",
+ "Couleurs": "Colours",
+ "Dither anti-banding": "Anti-banding dither",
+ "Durée de la transition (ms)": "Transition duration (ms)",
+ "Décalage entre colonnes": "Column stagger",
+ "Dégradé — arrivée": "Gradient — end",
+ "Dégradé — départ": "Gradient — start",
+ "Effets": "Effects",
+ "Effets avancés du titre": "Advanced title effects",
+ "En-tête": "Header",
+ "Espacement": "Letter spacing",
+ "Filament (cœur)": "Filament (core)",
+ "Flux : W de plein régime": "Flow: W at full power",
+ "Flux : intensité (à pleine puissance)": "Flow: intensity (at full power)",
+ "Flux : traces par couture": "Flow: traces per seam",
+ "Flux : vitesse (cycles/s)": "Flow: speed (cycles/s)",
+ "Flux indexé sur les W (0 = fixe)": "Flow scaled to W (0 = fixed)",
+ "Fond": "Background",
+ "Fondu": "Fade",
+ "Fréquence étincelles (rafales/s)": "Spark rate (bursts/s)",
+ "Glow (icône + titre)": "Glow (icon + title)",
+ "Glow du titre": "Title glow",
+ "Glow inter-modules": "Inter-module glow",
+ "Grésillement": "Sizzle",
+ "Halo de face": "Face halo",
+ "Halo du filament": "Filament halo",
+ "Hériter du fond card-mod": "Inherit card-mod background",
+ "Icône (mdi)": "Icon (mdi)",
+ "Italique": "Italic",
+ "Majuscules": "Uppercase",
+ "Mode Neo Tokyo": "Neo Tokyo mode",
+ "Module 1 — Entité": "Module 1 — Entity",
+ "Module 1 — Unité": "Module 1 — Unit",
+ "Module 2 — Entité": "Module 2 — Entity",
+ "Module 2 — Unité": "Module 2 — Unit",
+ "Module 3 — Entité": "Module 3 — Entity",
+ "Module 3 — Unité": "Module 3 — Unit",
+ "Module principal — Entité": "Main module — Entity",
+ "Module principal — Unité": "Main module — Unit",
+ "Modules additionnels (0–3)": "Additional modules (0–3)",
+ "Mêmes réglages que la neon-entities-card. Text-shadow ci-dessus, si renseigné, remplace le glow.": "Same settings as the neon-entities-card. The text-shadow above, if set, replaces the glow.",
+ "Ombre sous les coutures": "Seam shadow",
+ "Panneaux dot-matrix": "Dot-matrix panels",
+ "Police": "Font",
+ "Portée du champ": "Field reach",
+ "Renderer électrique": "Electric renderer",
+ "Respiration": "Breathing",
+ "Respiration : décalage par module (rad)": "Breathing: offset per module (rad)",
+ "Réglages fins (12 paramètres)": "Fine tuning (12 parameters)",
+ "Scintillement du titre": "Title flicker",
+ "Seuil SOC plein (%) — anim fill+glitch": "Full SOC threshold (%) — fill+glitch anim",
+ "Seuil puissance (W) — stabilise la flèche": "Power threshold (W) — steadies the arrow",
+ "Taille du glow": "Glow size",
+ "Taille glow": "Glow size",
+ "Taille icône (px)": "Icon size (px)",
+ "Taille titre (px)": "Title size (px)",
+ "Text-shadow (override manuel, prioritaire sur glow)": "Text-shadow (manual override, takes priority over glow)",
+ "Titre": "Title",
+ "Titre en dégradé": "Gradient title",
+ "Transition des points": "Dot transition",
+ "Vibration à la charge": "Vibration while charging",
+ "Vitesse crépitement": "Crackle speed",
+ "auto — ex #00E5FF": "auto — e.g. #00E5FF",
+ "auto — ex #4D7CFF": "auto — e.g. #4D7CFF",
+ "auto — ex #C3FDB8": "auto — e.g. #C3FDB8",
+ "auto — ex #ffd000": "auto — e.g. #ffd000",
+ "ex: #FF3366 / rgb(var(--rgb-lavande)) / var(--primary-color)": "e.g. #FF3366 / rgb(var(--rgb-lavande)) / var(--primary-color)",
+ "optionnel": "optional",
+ "parcourir": "browse",
+ "Épaisseur": "Weight",
+ "Étincelles simultanées": "Simultaneous sparks",
+ "— thème HA —": "— HA theme —"
+};
+const _t = (fr) => {
+  if (_lang === 'fr' || fr == null || fr === '') return fr;
+  const k = String(fr).replace(/\s+/g, ' ').trim();
+  return _EN[k] ?? fr;
+};
+const _setLang = (h) => {
+  const l = /^fr/i.test(String(h?.locale?.language || h?.language || '')) ? 'fr' : 'en';
+  if (l === _lang) return false;
+  _lang = l; return true;
+};
+
   class StoreyBatteryCardEditor extends HTMLElement {
     constructor() {
       super();
@@ -2642,7 +2744,7 @@ void main(){
       } else this._syncValues();
     }
     set hass(h) {
-      this._hass = h;
+      this._hass = h; if (_setLang(h) && this._rendered) this._render();
       this._fillDatalists();
     } // JAMAIS de render ici
     disconnectedCallback() {
@@ -2716,14 +2818,14 @@ void main(){
     _section(t) {
       const d = document.createElement("div");
       d.className = "sec";
-      d.textContent = t;
+      d.textContent = _t(t);
       (this._appendTo || this).appendChild(d);
       return d;
     }
     _hint(t) {
       const d = document.createElement("div");
       d.className = "hint";
-      d.textContent = t;
+      d.textContent = _t(t);
       (this._appendTo || this).appendChild(d);
       return d;
     }
@@ -2732,7 +2834,7 @@ void main(){
       const row = this._row(label);
       const inp = document.createElement("input");
       inp.type = "text";
-      inp.placeholder = ph;
+      inp.placeholder = _t(ph);
       inp.dataset.key = key;
       inp.value = this._read(key) ?? "";
       inp.addEventListener("input", () => this._set(key, inp.value));
@@ -2747,7 +2849,7 @@ void main(){
       if (min != null) inp.min = min;
       if (max != null) inp.max = max;
       inp.step = step;
-      inp.placeholder = ph;
+      inp.placeholder = _t(ph);
       inp.dataset.key = key;
       inp.value = this._read(key) ?? "";
       inp.addEventListener("input", () => {
@@ -2784,7 +2886,7 @@ void main(){
       box.className = "color-row";
       const txt = document.createElement("input");
       txt.type = "text";
-      txt.placeholder = ph;
+      txt.placeholder = _t(ph);
       txt.dataset.key = key;
       txt.value = this._read(key) ?? "";
       const pick = document.createElement("input");
@@ -2830,7 +2932,7 @@ void main(){
 
     _icon(key, label) {
       const row = this._row(
-        `${label} — <a href="https://pictogrammers.com/library/mdi/" target="_blank" rel="noopener" class="mdi-link">parcourir ↗</a>`,
+        `${_t(label)} — <a href="https://pictogrammers.com/library/mdi/" target="_blank" rel="noopener" class="mdi-link">${_t('parcourir')} ↗</a>`,
         true
       );
       const box = document.createElement("div");
@@ -2872,13 +2974,13 @@ void main(){
       if (emptyLabel !== null) {
         const o = document.createElement("option");
         o.value = "";
-        o.textContent = emptyLabel;
+        o.textContent = _t(emptyLabel);
         sel.appendChild(o);
       }
       options.forEach((opt) => {
         const o = document.createElement("option");
         o.value = typeof opt === "object" ? opt.value : opt;
-        o.textContent = typeof opt === "object" ? opt.label : opt;
+        o.textContent = _t(typeof opt === "object" ? opt.label : opt);
         sel.appendChild(o);
       });
       sel.value = this._read(key) ?? "";
@@ -2924,7 +3026,7 @@ void main(){
     _group(title, expanded, buildFn) {
       const panel = document.createElement("ha-expansion-panel");
       panel.outlined = true;
-      panel.header = title;
+      panel.header = _t(title);
       if (expanded) panel.expanded = true;
       (this._appendTo || this).appendChild(panel);
       const prevAppendTo = this._appendTo;
@@ -2940,7 +3042,7 @@ void main(){
       row.className = "row";
       const lbl = document.createElement("label");
       if (isHtml) lbl.innerHTML = labelHtml;
-      else lbl.textContent = labelHtml;
+      else lbl.textContent = _t(labelHtml);
       const wrap = document.createElement("div");
       wrap.className = "field-wrap";
       row.appendChild(lbl);
