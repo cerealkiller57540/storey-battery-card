@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔋 Storey Battery Card
+<img src="https://raw.githubusercontent.com/cerealkiller57540/storey-battery-card/main/images/logo.png" alt="Storey Battery Card" width="480">
 
 **A home-battery card for Home Assistant: a 3D battery stack whose joints crackle with electricity, rendered in WebGL.**
 
