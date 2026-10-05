@@ -19,7 +19,7 @@ The stack is drawn from the real footprint of a Sunology STOREY battery, from 1 
 
 It works with **any** home battery that exposes a state-of-charge sensor and a power sensor. The look is Storey's; the data can come from anywhere.
 
-<img src="https://raw.githubusercontent.com/cerealkiller57540/storey-battery-card/main/images/discharge.png" alt="Storey Battery Card while discharging" width="400">
+<img src="https://raw.githubusercontent.com/cerealkiller57540/storey-battery-card/main/images/discharge.webp" alt="Storey Battery Card while discharging" width="400">
 
 ## ✨ Features
 
