@@ -1,4 +1,4 @@
-/* ── storey-battery-card v14 — joint inter-module électrique (crépitement + sparks) ── */
+/* ── storey-battery-card v17.4.2 — joint inter-module électrique (crépitement + sparks) ── */
 (()=>{
 // Device detection — iPad/mobile : coupe les anims (SMIL + CSS) pour soulager le GPU.
 const SBC_IS_IPAD = /iPad/.test(navigator.userAgent) ||
@@ -1872,7 +1872,7 @@ window.customCards.push({
 })();
 
 console.info(
-  '%c 🔋 storey-battery-card v14.0 %c Neo Tokyo ',
+  '%c 🔋 storey-battery-card v17.4.2 %c Neo Tokyo ',
   'background:#FFD700;color:#000;padding:2px 4px;border-radius:3px 0 0 3px;font-weight:bold;',
   'background:#040811;color:#FF6A00;padding:2px 4px;border-radius:0 3px 3px 0;'
 );
