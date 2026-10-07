@@ -1,4 +1,4 @@
-/* ── storey-battery-card-gl v17.2 — joint inter-module électrique (crépitement + sparks) ── */
+/* ── storey-battery-card-gl v17.3.1 — joint inter-module électrique (crépitement + sparks) ── */
 (() => {
   // Device detection — iPad/mobile : coupe les anims (SMIL + CSS) pour soulager le GPU.
   const SBC_IS_IPAD =
@@ -223,7 +223,7 @@
    *   dans le document principal), CES IDS DEVIENNENT GLOBAUX et collisionnent :
    *   il faudra alors les préfixer par instance ET sortir _batCache du module,
    *   sinon la carte B recevra le SVG (et les IDs) bakés pour la carte A.
-   * (arbitrage tranché avec l'auteur le 2026-08-30) */
+   * (design decision, 2026-08-30) */
   function _stackDefs() {
     return (
       `<defs>${_grad("gCapSbc", CAP_STOPS)}${_grad("gBodySbc", BODY_STOPS)}` +
@@ -2569,7 +2569,7 @@ void main(){
       // fait justement le mode édition de HA : le SVG se décale verticalement,
       // le buffer et le setGeom restent calés sur l'ancien layout, et comme le
       // contexte GL est bien vivant rien ne le signale. Arcs décalés/étirés
-      // jusqu'au F5 (signalé par l'auteur le 2026-08-10 ; reproduit au probe :
+      // jusqu'au F5 (reported 2026-08-10; reproduit au probe :
       // SVG poussé de 48px → css 600x556 / buffer 600x508, rattrapage=false).
       if (!this._resizeElecGL()) return;
       this._gl.render((((now - t0) / 1000) % 3600)); // SECONDES, bornées à 1 h
@@ -3167,7 +3167,7 @@ const _setLang = (h) => {
         step: 1,
         ph: "22",
       });
-      this._color("header.color", "Couleur titre", "var(--primary-color)");
+      this._color("header.color", "Couleur titre", "rgba(var(--rgb-primary-text-color),0.55)", "défaut : texte du thème");
       this._select("header.font", "Police", SBC_FONTS, "— thème HA —");
       this._toggle("header.uppercase", "Majuscules", true);
 
@@ -3183,7 +3183,7 @@ const _setLang = (h) => {
         this._text("header.glow_size", "Taille du glow", "14");
         this._color("header.glow_color", "Couleur du glow", "var(--primary-color)");
         this._toggle("header.flicker", "Scintillement du titre");
-        this._color("header.icon_color", "Couleur de l'icône", "défaut : accent");
+        this._color("header.icon_color", "Couleur de l'icône", this._read("header.color") || "rgba(var(--rgb-primary-text-color),0.85)", "défaut : couleur du titre");
         this._hint("Mêmes réglages que la neon-entities-card. Text-shadow ci-dessus, si renseigné, remplace le glow.");
       });
 
@@ -3315,7 +3315,7 @@ const _setLang = (h) => {
 })();
 
 console.info(
-  "%c 🔋 storey-battery-card-gl v17.2-gl %c Neo Tokyo WebGL ",
+  "%c 🔋 storey-battery-card-gl v17.3.1-gl %c Neo Tokyo WebGL ",
   "background:#FFD700;color:#000;padding:2px 4px;border-radius:3px 0 0 3px;font-weight:bold;",
   "background:#040811;color:#FF6A00;padding:2px 4px;border-radius:0 3px 3px 0;"
 );
