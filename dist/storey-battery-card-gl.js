@@ -1,4 +1,4 @@
-/* ── storey-battery-card-gl v17.3.1 — joint inter-module électrique (crépitement + sparks) ── */
+/* ── storey-battery-card-gl v17.3.2 — joint inter-module électrique (crépitement + sparks) ── */
 (() => {
   // Device detection — iPad/mobile : coupe les anims (SMIL + CSS) pour soulager le GPU.
   const SBC_IS_IPAD =
@@ -222,8 +222,7 @@
    * → Si un jour un <svg> sort du shadow (export PNG, <use> cross-root, rendu
    *   dans le document principal), CES IDS DEVIENNENT GLOBAUX et collisionnent :
    *   il faudra alors les préfixer par instance ET sortir _batCache du module,
-   *   sinon la carte B recevra le SVG (et les IDs) bakés pour la carte A.
-   * (design decision, 2026-08-30) */
+   *   sinon la carte B recevra le SVG (et les IDs) bakés pour la carte A. */
   function _stackDefs() {
     return (
       `<defs>${_grad("gCapSbc", CAP_STOPS)}${_grad("gBodySbc", BODY_STOPS)}` +
@@ -1152,8 +1151,8 @@
       }
       /* v17.2 — LIBÉRER le contexte au détachement (recopie de linux-terminal-card-webgl).
        * HA garde en mémoire les anciennes instances quand il reconstruit la vue (reprise
-       * de l'app) : leur contexte restait vivant et comptait dans le plafond Android (8),
-       * mesuré au banc. Au rattachement, connectedCallback -> _startElec -> _syncElecGL
+       * de l'app) : leur contexte restait vivant et comptait dans le plafond Android (8).
+       * Au rattachement, connectedCallback -> _startElec -> _syncElecGL
        * recrée sur un canvas NEUF (un canvas garde son contexte à vie, cf v17.1). */
       if (this._gl) {
         this._gl.dispose();
@@ -1478,8 +1477,7 @@
             breath: clampNum(this._config.elec_breath, 0, 2, 0.25),
             dither: clampNum(this._config.elec_dither, 0, 2.5, 2.5),
             range: clampNum(this._config.elec_range, 0.2, 1.2, 0.5),
-            // v17 : valeurs réglées à l'œil au banc d'essai (ha-card-preview-bench, 2026-09-30) :
-            // ne pas les rechoisir au jugé.
+            // Constantes ajustées visuellement : ne pas les modifier sans revérifier le rendu.
             // Intensité et vitesse du flux INDEXÉES SUR LES W : plein régime à
             // elec_flow_wref, atténuées en dessous (elec_flow_index = 0 : fixe).
             flow: clampNum(this._config.elec_flow, 0, 2, 0.6) * (1 - flowIdx * (1 - flowK)),
@@ -1951,8 +1949,7 @@
    *   B = offset SIGNÉ par rapport à la couture (0.5 = pile dessus)
    *   A = id de module encodé en clair (40/80/120…), décodé côté shader
    *       par floor((a*255-40)/40 + 0.5) → seed/pulse propres à chaque module
-   * (⚠️ ce bloc a menti jusqu'au 2026-08-30 : il décrivait B et A inversés et
-   *  un « masque » qui n'a jamais existé. Cf. le bake ~l.2079 qui fait foi.)
+   * (_sbcBakeSeams fait foi.)
    * Alignement : gl_FragCoord → UV du viewBox via uSvgOff/uSvgSize (bbox réelle
    * du SVG dans le canvas), donc indépendant du letterboxing du conteneur. */
   const SBC_FRAG = `
@@ -2569,8 +2566,7 @@ void main(){
       // fait justement le mode édition de HA : le SVG se décale verticalement,
       // le buffer et le setGeom restent calés sur l'ancien layout, et comme le
       // contexte GL est bien vivant rien ne le signale. Arcs décalés/étirés
-      // jusqu'au F5 (reported 2026-08-10; reproduit au probe :
-      // SVG poussé de 48px → css 600x556 / buffer 600x508, rattrapage=false).
+      // jusqu'au F5.
       if (!this._resizeElecGL()) return;
       this._gl.render((((now - t0) / 1000) % 3600)); // SECONDES, bornées à 1 h
     };
@@ -3017,7 +3013,7 @@ const _setLang = (h) => {
       return inp;
     }
 
-    // ── Groupe repliable (test ha-expansion-panel, 2026-08-23) ──────────
+    // ── Groupe repliable (ha-expansion-panel) ──────────
     // Enveloppe un bloc de champs dans <ha-expansion-panel>. buildFn() appelle
     // les helpers habituels (_section/_text/_range/...) qui vont s'appender
     // DEDANS via _appendTo — aucun changement requis sur les helpers.
@@ -3266,7 +3262,6 @@ const _setLang = (h) => {
         this._range("elec_griz", "Grésillement", { min: 0, max: 1, step: 0.05 });
         this._range("elec_breath", "Respiration", { min: 0, max: 2, step: 0.05 });
         this._range("elec_dither", "Dither anti-banding", { min: 0, max: 2.5, step: 0.05 });
-        // v17 — réglés au banc d'essai
         this._range("elec_flow", "Flux : intensité (à pleine puissance)", { min: 0, max: 2, step: 0.05 });
         this._range("elec_flow_speed", "Flux : vitesse (cycles/s)", { min: 0.05, max: 2, step: 0.05 });
         this._range("elec_flow_density", "Flux : traces par couture", { min: 0.5, max: 6, step: 0.25 });
@@ -3315,7 +3310,7 @@ const _setLang = (h) => {
 })();
 
 console.info(
-  "%c 🔋 storey-battery-card-gl v17.3.1-gl %c Neo Tokyo WebGL ",
+  "%c 🔋 storey-battery-card-gl v17.3.2-gl %c Neo Tokyo WebGL ",
   "background:#FFD700;color:#000;padding:2px 4px;border-radius:3px 0 0 3px;font-weight:bold;",
   "background:#040811;color:#FF6A00;padding:2px 4px;border-radius:0 3px 3px 0;"
 );
