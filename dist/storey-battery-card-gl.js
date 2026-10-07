@@ -2624,6 +2624,10 @@ void main(){
 /* ── i18n FR/EN : la clé est la chaîne française (le français s'affiche tel quel) ── */
 let _lang = 'en';
 const _EN = {
+ "Typographie": "Typography",
+ "Seuils": "Thresholds",
+ "Glow & dégradé": "Glow & gradient",
+ "Flux d'énergie": "Energy flow",
  "Accent": "Accent",
  "Afficher en-tête": "Show header",
  "Amplitude ondulation": "Wave amplitude",
@@ -3108,14 +3112,25 @@ const _setLang = (h) => {
     // ── CSS commun (identique partout, + spécifique range) ──────────────
     _css() {
       return `
+      storey-battery-card-gl-editor {
+        --ned-label: color-mix(in srgb, var(--primary-text-color) 82%, transparent);
+        --ned-dim: color-mix(in srgb, var(--primary-text-color) 60%, transparent);
+        --ned-accent: color-mix(in srgb, var(--primary-color) 55%, var(--primary-text-color));
+        --ned-line: color-mix(in srgb, var(--primary-color) 55%, transparent);
+      }
+      storey-battery-card-gl-editor ha-expansion-panel {
+        --outline-color: var(--ned-line);
+        --expansion-panel-summary-padding: 0 12px;
+        color: var(--primary-text-color);
+      }
       :host { display:block; padding:14px; font-family:var(--primary-font-family,Roboto,sans-serif); }
-      .sec { font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color);margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--divider-color); }
+      .sec { font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ned-accent);margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--ned-line); }
       .sec:first-child { margin-top:0; }
       .row { display:flex;align-items:center;gap:8px;margin-bottom:6px; }
-      .row label { flex:0 0 160px;font-size:12px;color:var(--secondary-text-color); }
-      .row label .mdi-link { color:var(--primary-color);font-size:9px;text-transform:none;letter-spacing:0; }
+      .row label { flex:0 0 160px;font-size:12px;color:var(--ned-label); }
+      .row label .mdi-link { color:var(--ned-accent);font-size:9px;text-transform:none;letter-spacing:0; }
       .field-wrap { flex:1;min-width:0;display:flex; }
-      input[type=text],input[type=number],select { flex:1;width:100%;padding:4px 8px;border:1px solid var(--divider-color);border-radius:4px;background:var(--card-background-color);color:var(--primary-text-color);font-size:12px;outline:none;box-sizing:border-box; }
+      input[type=text],input[type=number],select { flex:1;width:100%;padding:4px 8px;border:1px solid var(--ned-line);border-radius:4px;background:var(--card-background-color);color:var(--primary-text-color);font-size:12px;outline:none;box-sizing:border-box; }
       select { cursor:pointer; }
       input:focus,select:focus { box-shadow:0 0 0 1px var(--primary-color); }
       .color-row { display:flex;gap:8px;flex:1; }
@@ -3123,12 +3138,12 @@ const _setLang = (h) => {
       .color-row input[type=color] { width:36px;height:28px;flex:none;padding:0;border:none;background:none;border-radius:4px;cursor:pointer; }
       .icon-row { display:flex;gap:8px;flex:1;align-items:center; }
       .icon-row input { flex:1; }
-      .icon-preview { width:30px;height:28px;flex:none;display:flex;align-items:center;justify-content:center;border:1px solid var(--divider-color);border-radius:4px;color:var(--primary-text-color); }
-      .hint { font-size:11px;color:var(--secondary-text-color);font-style:italic;margin:-2px 0 6px 168px; }
+      .icon-preview { width:30px;height:28px;flex:none;display:flex;align-items:center;justify-content:center;border:1px solid var(--ned-line);border-radius:4px;color:var(--primary-text-color); }
+      .hint { font-size:11px;color:var(--ned-dim);font-style:italic;margin:-2px 0 6px 168px; }
       .range-row { display:flex;gap:8px;flex:1;align-items:center; }
       .range-row input[type=range] { flex:1; }
-      .range-row .range-val { flex:none;width:36px;text-align:right;font-size:11px;color:var(--secondary-text-color); }
-      .module-block { border:1px dashed var(--divider-color);border-radius:8px;padding:8px 10px 2px;margin-bottom:8px; }
+      .range-row .range-val { flex:none;width:36px;text-align:right;font-size:11px;color:var(--ned-label); }
+      .module-block { border:1px dashed var(--ned-line);border-radius:8px;padding:8px 10px 2px;margin-bottom:8px; }
     `;
     }
 
@@ -3147,43 +3162,10 @@ const _setLang = (h) => {
     // ║  SCHÉMA — LA SEULE PARTIE À ÉCRIRE PAR CARD                     ║
     // ╚════════════════════════════════════════════════════════════════╝
     _schema() {
-      this._section("En-tête");
-      this._toggle("header.enabled", "Afficher en-tête", true);
-      this._text("header.title", "Titre", "STOREY");
-      this._icon("header.icon", "Icône (mdi)");
-      this._number("header.title_size", "Taille titre (px)", {
-        min: 8,
-        max: 48,
-        step: 1,
-        ph: "24",
-      });
-      this._number("header.icon_size", "Taille icône (px)", {
-        min: 10,
-        max: 48,
-        step: 1,
-        ph: "22",
-      });
-      this._color("header.color", "Couleur titre", "rgba(var(--rgb-primary-text-color),0.55)", "défaut : texte du thème");
-      this._select("header.font", "Police", SBC_FONTS, "— thème HA —");
-      this._toggle("header.uppercase", "Majuscules", true);
-
-      this._group("Effets avancés du titre", false, () => {
-        this._text("header.font_weight", "Épaisseur", "600");
-        this._text("header.letter_spacing", "Espacement", "0.02em");
-        this._toggle("header.italic", "Italique", false);
-        this._text("header.title_shadow", "Text-shadow", "0 0 8px rgba(0,212,255,0.7)");
-        this._toggle("header.gradient", "Titre en dégradé");
-        this._color("header.gradient_from", "Dégradé — départ", "var(--primary-color)");
-        this._color("header.gradient_to", "Dégradé — arrivée", "var(--accent-color)");
-        this._toggle("header.glow", "Glow du titre");
-        this._text("header.glow_size", "Taille du glow", "14");
-        this._color("header.glow_color", "Couleur du glow", "var(--primary-color)");
-        this._toggle("header.flicker", "Scintillement du titre");
-        this._color("header.icon_color", "Couleur de l'icône", this._read("header.color") || "rgba(var(--rgb-primary-text-color),0.85)", "défaut : couleur du titre");
-        this._hint("Mêmes réglages que la neon-entities-card. Text-shadow ci-dessus, si renseigné, remplace le glow.");
-      });
-
-      this._section("Modules");
+      this._section("Capteurs");
+      this._entity("master_status_entity", "Master Status", "sensor");
+      this._entity("soc_entity", "State of Charge %", "sensor");
+      this._entity("power_entity", "Power W", "sensor");
       this._select(
         "modules",
         "Modules additionnels (0–3)",
@@ -3193,103 +3175,108 @@ const _setLang = (h) => {
         }))
       );
 
-      this._section("Capteurs");
-      this._group("Capteurs & modules", false, () => {
-        this._entity("master_status_entity", "Master Status", "sensor");
-        this._entity("soc_entity", "State of Charge %", "sensor");
-        this._entity("power_entity", "Power W", "sensor");
-        this._number("power_threshold", "Seuil puissance (W) — stabilise la flèche", {
-          min: 0,
-          max: 500,
-          step: 10,
-          ph: "50",
-        });
-        this._number("soc_full_threshold", "Seuil SOC plein (%) — anim fill+glitch", {
-          min: 80,
-          max: 100,
-          step: 1,
-          ph: "97",
-        });
+      const mainBox = document.createElement("div");
+      mainBox.className = "module-block";
+      this.appendChild(mainBox);
+      this._appendTo = mainBox;
+      this._entity("module_0_entity", "Module principal — Entité", "sensor");
+      this._text("module_0_unit", "Module principal — Unité", "W, kW…");
+      this._appendTo = null;
 
-        const mainBox = document.createElement("div");
-        mainBox.className = "module-block";
-        (this._appendTo || this).appendChild(mainBox);
-        const groupAppendTo = this._appendTo;
-        this._appendTo = mainBox;
-        this._entity("module_0_entity", "Module principal — Entité", "sensor");
-        this._text("module_0_unit", "Module principal — Unité", "W, kW…");
-        this._appendTo = groupAppendTo;
+      const modules = Math.min(3, Math.max(0, parseInt(this._config.modules) || 0));
+      for (let i = 1; i <= modules; i++) {
+        const box = document.createElement("div");
+        box.className = "module-block";
+        this.appendChild(box);
+        this._appendTo = box;
+        this._entity(`module_${i}_entity`, `Module ${i} — Entité`, "sensor");
+        this._text(`module_${i}_unit`, `Module ${i} — Unité`, "W, kW…");
+        this._appendTo = null;
+      }
 
-        const modules = Math.min(3, Math.max(0, parseInt(this._config.modules) || 0));
-        for (let i = 1; i <= modules; i++) {
-          const box = document.createElement("div");
-          box.className = "module-block";
-          (this._appendTo || this).appendChild(box);
-          this._appendTo = box;
-          this._entity(`module_${i}_entity`, `Module ${i} — Entité`, "sensor");
-          this._text(`module_${i}_unit`, `Module ${i} — Unité`, "W, kW…");
-          this._appendTo = groupAppendTo;
-        }
+      this._group("En-tête", false, () => {
+        this._toggle("header.enabled", "Afficher en-tête", true);
+        this._text("header.title", "Titre", "STOREY");
+        this._icon("header.icon", "Icône (mdi)");
+        this._number("header.title_size", "Taille titre (px)", { min: 8, max: 48, step: 1, ph: "24" });
+        this._number("header.icon_size", "Taille icône (px)", { min: 10, max: 48, step: 1, ph: "22" });
+        this._color("header.color", "Couleur titre", "rgba(var(--rgb-primary-text-color),0.55)", "défaut : texte du thème");
+        this._color("header.icon_color", "Couleur de l'icône", this._read("header.color") || "rgba(var(--rgb-primary-text-color),0.85)", "défaut : couleur du titre");
+        this._group("Typographie", false, () => {
+          this._select("header.font", "Police", SBC_FONTS, "— thème HA —");
+          this._text("header.font_weight", "Épaisseur", "600");
+          this._text("header.letter_spacing", "Espacement", "0.02em");
+          this._toggle("header.uppercase", "Majuscules", true);
+          this._toggle("header.italic", "Italique", false);
+        });
+        this._group("Glow & dégradé", false, () => {
+          this._toggle("header.glow", "Glow du titre");
+          this._text("header.glow_size", "Taille du glow", "14");
+          this._color("header.glow_color", "Couleur du glow", "var(--primary-color)");
+          this._toggle("header.flicker", "Scintillement du titre");
+          this._toggle("header.gradient", "Titre en dégradé");
+          this._color("header.gradient_from", "Dégradé — départ", "var(--primary-color)");
+          this._color("header.gradient_to", "Dégradé — arrivée", "var(--accent-color)");
+          this._text("header.title_shadow", "Text-shadow", "0 0 8px rgba(0,212,255,0.7)");
+          this._hint("Mêmes réglages que la neon-entities-card. Text-shadow ci-dessus, si renseigné, remplace le glow.");
+        });
       });
 
-      this._section("Effets");
-      this._toggle("glow_enabled", "Glow inter-modules", false);
-      this._toggle("card_mod_bg", "Hériter du fond card-mod", false);
-      this._select(
-        "renderer",
-        "Renderer électrique",
-        [
+      this._group("Seuils", false, () => {
+        this._number("power_threshold", "Seuil puissance (W) — stabilise la flèche", { min: 0, max: 500, step: 10, ph: "50" });
+        this._number("soc_full_threshold", "Seuil SOC plein (%) — anim fill+glitch", { min: 80, max: 100, step: 1, ph: "97" });
+      });
+
+      this._group("Effets", false, () => {
+        this._toggle("glow_enabled", "Glow inter-modules", false);
+        this._toggle("card_mod_bg", "Hériter du fond card-mod", false);
+        this._toggle("cyberpunk_mode", "Mode Neo Tokyo", false);
+        this._toggle("neon_glow", "Neon Glow", false);
+        this._select("renderer", "Renderer électrique", [
           { value: "auto", label: "Auto — WebGL puis SVG" },
           { value: "webgl", label: "WebGL" },
           { value: "svg", label: "SVG" },
-        ]
-      );
-
-      this._section("Arc électrique");
-      this._group("Réglages fins (12 paramètres)", false, () => {
-        this._range("elec_crackle", "Vitesse crépitement", { min: 0.02, max: 0.6, step: 0.01 });
-        this._range("elec_spark_rate", "Fréquence étincelles (rafales/s)", {
-          min: 0.2,
-          max: 4,
-          step: 0.05,
+        ]);
+        this._group("Arc électrique", false, () => {
+          this._range("elec_crackle", "Vitesse crépitement", { min: 0.02, max: 0.6, step: 0.01 });
+          this._range("elec_spark_rate", "Fréquence étincelles (rafales/s)", { min: 0.2, max: 4, step: 0.05 });
+          this._range("elec_sparks", "Étincelles simultanées", { min: 0, max: 5, step: 1 });
+          this._range("elec_spark_amp", "Amplitude ondulation", { min: 0.5, max: 9, step: 0.1 });
+          this._range("elec_range", "Portée du champ", { min: 0.2, max: 1.2, step: 0.05 });
+          this._range("elec_spill", "Halo de face", { min: 0, max: 2, step: 0.05 });
+          this._range("elec_core", "Filament (cœur)", { min: 0, max: 2, step: 0.05 });
+          this._range("elec_halo", "Halo du filament", { min: 0, max: 2, step: 0.05 });
+          this._range("elec_griz", "Grésillement", { min: 0, max: 1, step: 0.05 });
+          this._range("elec_breath", "Respiration", { min: 0, max: 2, step: 0.05 });
+          this._range("elec_breath_phase", "Respiration : décalage par module (rad)", { min: 0, max: 3, step: 0.05 });
+          this._range("elec_dither", "Dither anti-banding", { min: 0, max: 2.5, step: 0.05 });
+          this._range("elec_ao", "Ombre sous les coutures", { min: 0, max: 1, step: 0.05 });
+          this._range("elec_vibration", "Vibration à la charge", { min: 0, max: 1, step: 0.05 });
+          this._color("elec_color_charge", "Couleur charge", null, "auto — ex #00E5FF");
+          this._color("elec_color_discharge", "Couleur décharge", null, "auto — ex #C3FDB8");
         });
-        this._range("elec_sparks", "Étincelles simultanées", { min: 0, max: 5, step: 1 });
-        this._range("elec_spark_amp", "Amplitude ondulation", { min: 0.5, max: 9, step: 0.1 });
-        this._range("elec_range", "Portée du champ", { min: 0.2, max: 1.2, step: 0.05 });
-        this._range("elec_spill", "Halo de face", { min: 0, max: 2, step: 0.05 });
-        this._range("elec_core", "Filament (cœur)", { min: 0, max: 2, step: 0.05 });
-        this._range("elec_halo", "Halo du filament", { min: 0, max: 2, step: 0.05 });
-        this._range("elec_griz", "Grésillement", { min: 0, max: 1, step: 0.05 });
-        this._range("elec_breath", "Respiration", { min: 0, max: 2, step: 0.05 });
-        this._range("elec_dither", "Dither anti-banding", { min: 0, max: 2.5, step: 0.05 });
-        this._range("elec_flow", "Flux : intensité (à pleine puissance)", { min: 0, max: 2, step: 0.05 });
-        this._range("elec_flow_speed", "Flux : vitesse (cycles/s)", { min: 0.05, max: 2, step: 0.05 });
-        this._range("elec_flow_density", "Flux : traces par couture", { min: 0.5, max: 6, step: 0.25 });
-        this._range("elec_flow_index", "Flux indexé sur les W (0 = fixe)", { min: 0, max: 1, step: 0.05 });
-        this._range("elec_flow_wref", "Flux : W de plein régime", { min: 200, max: 4000, step: 50 });
-        this._range("elec_breath_phase", "Respiration : décalage par module (rad)", { min: 0, max: 3, step: 0.05 });
-        this._range("elec_ao", "Ombre sous les coutures", { min: 0, max: 1, step: 0.05 });
-        this._range("elec_vibration", "Vibration à la charge", { min: 0, max: 1, step: 0.05 });
-        this._color("elec_color_charge", "Couleur charge", null, "auto — ex #00E5FF");
-        this._color("elec_color_discharge", "Couleur décharge", null, "auto — ex #C3FDB8");
+        this._group("Flux d'énergie", false, () => {
+          this._range("elec_flow", "Flux : intensité (à pleine puissance)", { min: 0, max: 2, step: 0.05 });
+          this._range("elec_flow_speed", "Flux : vitesse (cycles/s)", { min: 0.05, max: 2, step: 0.05 });
+          this._range("elec_flow_density", "Flux : traces par couture", { min: 0.5, max: 6, step: 0.25 });
+          this._range("elec_flow_index", "Flux indexé sur les W (0 = fixe)", { min: 0, max: 1, step: 0.05 });
+          this._range("elec_flow_wref", "Flux : W de plein régime", { min: 200, max: 4000, step: 50 });
+        });
+        this._group("Panneaux dot-matrix", false, () => {
+          this._select("panel_anim", "Transition des points", [
+            { value: "fade", label: "Fondu" },
+            { value: "flip", label: "Flip-dot" },
+            { value: "off", label: "Aucune" },
+          ]);
+          this._range("panel_ms", "Durée de la transition (ms)", { min: 80, max: 1200, step: 10 });
+          this._range("panel_stagger", "Décalage entre colonnes", { min: 0, max: 120, step: 1 });
+        });
       });
 
-      this._section("Panneaux dot-matrix");
-      this._select("panel_anim", "Transition des points", [
-        { value: "fade", label: "Fondu" },
-        { value: "flip", label: "Flip-dot" },
-        { value: "off", label: "Aucune" },
-      ]);
-      this._range("panel_ms", "Durée de la transition (ms)", { min: 80, max: 1200, step: 10 });
-      this._range("panel_stagger", "Décalage entre colonnes", { min: 0, max: 120, step: 1 });
-
-      this._section("Cyberpunk");
-      this._toggle("cyberpunk_mode", "Mode Neo Tokyo", false);
-      this._toggle("neon_glow", "Neon Glow", false);
-
-      this._section("Couleurs");
-      this._color("color_accent", "Accent", DEF_ACCENT);
-      this._color("color_bg", "Fond", DEF_BG);
+      this._group("Couleurs", false, () => {
+        this._color("color_accent", "Accent", DEF_ACCENT);
+        this._color("color_bg", "Fond", DEF_BG);
+      });
     }
   }
 
@@ -3310,7 +3297,7 @@ const _setLang = (h) => {
 })();
 
 console.info(
-  "%c 🔋 storey-battery-card-gl v17.3.2-gl %c Neo Tokyo WebGL ",
+  "%c 🔋 storey-battery-card-gl v17.4.0-gl %c Neo Tokyo WebGL ",
   "background:#FFD700;color:#000;padding:2px 4px;border-radius:3px 0 0 3px;font-weight:bold;",
   "background:#040811;color:#FF6A00;padding:2px 4px;border-radius:0 3px 3px 0;"
 );

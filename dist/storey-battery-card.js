@@ -1404,6 +1404,9 @@ const SBC_FONTS = [
 /* ── i18n FR/EN : la clé est la chaîne française (le français s'affiche tel quel) ── */
 let _lang = 'en';
 const _EN = {
+ "Typographie": "Typography",
+ "Glow": "Glow",
+ "Seuils": "Thresholds",
  "Accent": "Accent",
  "Afficher en-tête": "Show header",
  "Amplitude ondulation": "Wave amplitude",
@@ -1560,6 +1563,20 @@ class StoreyBatteryCardEditor extends HTMLElement {
 
   // ── Helpers de champ (signatures FIXES — ne pas réinventer) ────────
   _section(t) { const d = document.createElement('div'); d.className = 'sec'; d.textContent = _t(t); (this._appendTo || this).appendChild(d); return d; }
+  // Groupe repliable : buildFn() appelle les helpers, qui s'appendent DEDANS via _appendTo.
+  // L'état ouvert/fermé reste local au panneau (jamais dans _config).
+  _group(title, expanded, buildFn) {
+    const panel = document.createElement('ha-expansion-panel');
+    panel.outlined = true;
+    panel.header = _t(title);
+    if (expanded) panel.expanded = true;
+    (this._appendTo || this).appendChild(panel);
+    const prevAppendTo = this._appendTo;
+    this._appendTo = panel;
+    buildFn();
+    this._appendTo = prevAppendTo;
+    return panel;
+  }
   _hint(t)    { const d = document.createElement('div'); d.className = 'hint'; d.textContent = _t(t); (this._appendTo || this).appendChild(d); return d; }
 
   _text(key, label, ph = '') {
@@ -1719,14 +1736,25 @@ class StoreyBatteryCardEditor extends HTMLElement {
   // ── CSS commun (identique partout, + spécifique range) ──────────────
   _css() {
     return `
+      storey-battery-card-editor {
+        --ned-label: color-mix(in srgb, var(--primary-text-color) 82%, transparent);
+        --ned-dim: color-mix(in srgb, var(--primary-text-color) 60%, transparent);
+        --ned-accent: color-mix(in srgb, var(--primary-color) 55%, var(--primary-text-color));
+        --ned-line: color-mix(in srgb, var(--primary-color) 55%, transparent);
+      }
+      storey-battery-card-editor ha-expansion-panel {
+        --outline-color: var(--ned-line);
+        --expansion-panel-summary-padding: 0 12px;
+        color: var(--primary-text-color);
+      }
       :host { display:block; padding:14px; font-family:var(--primary-font-family,Roboto,sans-serif); }
-      .sec { font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color);margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--divider-color); }
+      .sec { font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ned-accent);margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--divider-color); }
       .sec:first-child { margin-top:0; }
       .row { display:flex;align-items:center;gap:8px;margin-bottom:6px; }
-      .row label { flex:0 0 160px;font-size:12px;color:var(--secondary-text-color); }
-      .row label .mdi-link { color:var(--primary-color);font-size:9px;text-transform:none;letter-spacing:0; }
+      .row label { flex:0 0 160px;font-size:12px;color:var(--ned-label); }
+      .row label .mdi-link { color:var(--ned-accent);font-size:9px;text-transform:none;letter-spacing:0; }
       .field-wrap { flex:1;min-width:0;display:flex; }
-      input[type=text],input[type=number],select { flex:1;width:100%;padding:4px 8px;border:1px solid var(--divider-color);border-radius:4px;background:var(--card-background-color);color:var(--primary-text-color);font-size:12px;outline:none;box-sizing:border-box; }
+      input[type=text],input[type=number],select { flex:1;width:100%;padding:4px 8px;border:1px solid var(--ned-line);border-radius:4px;background:var(--card-background-color);color:var(--primary-text-color);font-size:12px;outline:none;box-sizing:border-box; }
       select { cursor:pointer; }
       input:focus,select:focus { box-shadow:0 0 0 1px var(--primary-color); }
       .color-row { display:flex;gap:8px;flex:1; }
@@ -1734,12 +1762,12 @@ class StoreyBatteryCardEditor extends HTMLElement {
       .color-row input[type=color] { width:36px;height:28px;flex:none;padding:0;border:none;background:none;border-radius:4px;cursor:pointer; }
       .icon-row { display:flex;gap:8px;flex:1;align-items:center; }
       .icon-row input { flex:1; }
-      .icon-preview { width:30px;height:28px;flex:none;display:flex;align-items:center;justify-content:center;border:1px solid var(--divider-color);border-radius:4px;color:var(--primary-text-color); }
-      .hint { font-size:11px;color:var(--secondary-text-color);font-style:italic;margin:-2px 0 6px 168px; }
+      .icon-preview { width:30px;height:28px;flex:none;display:flex;align-items:center;justify-content:center;border:1px solid var(--ned-line);border-radius:4px;color:var(--primary-text-color); }
+      .hint { font-size:11px;color:var(--ned-dim);font-style:italic;margin:-2px 0 6px 168px; }
       .range-row { display:flex;gap:8px;flex:1;align-items:center; }
       .range-row input[type=range] { flex:1; }
-      .range-row .range-val { flex:none;width:36px;text-align:right;font-size:11px;color:var(--secondary-text-color); }
-      .module-block { border:1px dashed var(--divider-color);border-radius:8px;padding:8px 10px 2px;margin-bottom:8px; }
+      .range-row .range-val { flex:none;width:36px;text-align:right;font-size:11px;color:var(--ned-label); }
+      .module-block { border:1px dashed var(--ned-line);border-radius:8px;padding:8px 10px 2px;margin-bottom:8px; }
     `;
   }
 
@@ -1756,33 +1784,12 @@ class StoreyBatteryCardEditor extends HTMLElement {
   // ║  SCHÉMA — LA SEULE PARTIE À ÉCRIRE PAR CARD                     ║
   // ╚════════════════════════════════════════════════════════════════╝
   _schema() {
-    this._section('En-tête');
-    this._text('header.title', 'Titre', 'STOREY');
-    this._icon('header.icon', 'Icône (mdi)');
-    this._number('header.title_size', 'Taille titre (px)', { min: 8, max: 48, step: 1, ph: '24' });
-    this._number('header.icon_size', 'Taille icône (px)', { min: 10, max: 48, step: 1, ph: '22' });
-    this._color('header.color', 'Couleur titre', 'var(--primary-color)');
-    this._select('header.font', 'Police', SBC_FONTS, '— thème HA —');
-    this._text('header.font_weight', 'Épaisseur', '600');
-    this._text('header.letter_spacing', 'Espacement', '0.02em');
-    this._toggle('header.uppercase', 'Majuscules', true);
-    this._toggle('header.italic', 'Italique', false);
-    this._color('header.icon_color', 'Couleur icône', 'défaut : couleur accent');
-    this._toggle('header.glow', 'Glow (icône + titre)', false);
-    this._color('header.glow_color', 'Couleur glow', 'défaut : couleur accent');
-    this._text('header.glow_size', 'Taille glow', '12');
-    this._text('header.title_shadow', 'Text-shadow (override manuel, prioritaire sur glow)', 'optionnel');
-
-    this._section('Modules');
-    this._select('modules', 'Modules additionnels (0–3)',
-      [0, 1, 2, 3].map(n => ({ value: String(n), label: `${n} module${n > 1 ? 's' : ''} — total ${n + 1}` })));
-
     this._section('Capteurs');
     this._entity('master_status_entity', 'Master Status', 'sensor');
     this._entity('soc_entity', 'State of Charge %', 'sensor');
     this._entity('power_entity', 'Power W', 'sensor');
-    this._number('power_threshold', 'Seuil puissance (W) — stabilise la flèche', { min: 0, max: 500, step: 10, ph: '50' });
-    this._number('soc_full_threshold', 'Seuil SOC plein (%) — anim fill+glitch', { min: 80, max: 100, step: 1, ph: '97' });
+    this._select('modules', 'Modules additionnels (0–3)',
+      [0, 1, 2, 3].map(n => ({ value: String(n), label: `${n} module${n > 1 ? 's' : ''} — total ${n + 1}` })));
 
     const mainBox = document.createElement('div'); mainBox.className = 'module-block'; this.appendChild(mainBox);
     this._appendTo = mainBox;
@@ -1799,24 +1806,51 @@ class StoreyBatteryCardEditor extends HTMLElement {
       this._appendTo = null;
     }
 
-    this._section('Effets');
-    this._toggle('glow_enabled', 'Glow inter-modules', false);
-    this._toggle('card_mod_bg', 'Hériter du fond card-mod', false);
+    this._group('En-tête', false, () => {
+      this._text('header.title', 'Titre', 'STOREY');
+      this._icon('header.icon', 'Icône (mdi)');
+      this._number('header.title_size', 'Taille titre (px)', { min: 8, max: 48, step: 1, ph: '24' });
+      this._number('header.icon_size', 'Taille icône (px)', { min: 10, max: 48, step: 1, ph: '22' });
+      this._color('header.color', 'Couleur titre', 'var(--primary-color)');
+      this._color('header.icon_color', 'Couleur icône', 'défaut : couleur accent');
+      this._group('Typographie', false, () => {
+        this._select('header.font', 'Police', SBC_FONTS, '— thème HA —');
+        this._text('header.font_weight', 'Épaisseur', '600');
+        this._text('header.letter_spacing', 'Espacement', '0.02em');
+        this._toggle('header.uppercase', 'Majuscules', true);
+        this._toggle('header.italic', 'Italique', false);
+      });
+      this._group('Glow', false, () => {
+        this._toggle('header.glow', 'Glow (icône + titre)', false);
+        this._color('header.glow_color', 'Couleur glow', 'défaut : couleur accent');
+        this._text('header.glow_size', 'Taille glow', '12');
+        this._text('header.title_shadow', 'Text-shadow (override manuel, prioritaire sur glow)', 'optionnel');
+      });
+    });
 
-    this._section('Arc électrique');
-    this._range('elec_crackle', 'Vitesse crépitement', { min: 0.04, max: 0.4, step: 0.01 });
-    this._range('elec_spark_rate', 'Fréquence étincelles (rafales/s)', { min: 0.3, max: 4, step: 0.1 });
-    this._range('elec_spark_amp', 'Amplitude étincelles', { min: 1, max: 9, step: 0.5 });
-    this._color('elec_color_charge', 'Couleur charge', null, 'auto — ex #ffd000');
-    this._color('elec_color_discharge', 'Couleur décharge', null, 'auto — ex #4D7CFF');
+    this._group('Seuils', false, () => {
+      this._number('power_threshold', 'Seuil puissance (W) — stabilise la flèche', { min: 0, max: 500, step: 10, ph: '50' });
+      this._number('soc_full_threshold', 'Seuil SOC plein (%) — anim fill+glitch', { min: 80, max: 100, step: 1, ph: '97' });
+    });
 
-    this._section('Cyberpunk');
-    this._toggle('cyberpunk_mode', 'Mode Neo Tokyo', false);
-    this._toggle('neon_glow', 'Neon Glow', false);
+    this._group('Effets', false, () => {
+      this._toggle('glow_enabled', 'Glow inter-modules', false);
+      this._toggle('card_mod_bg', 'Hériter du fond card-mod', false);
+      this._toggle('cyberpunk_mode', 'Mode Neo Tokyo', false);
+      this._toggle('neon_glow', 'Neon Glow', false);
+      this._group('Arc électrique', false, () => {
+        this._range('elec_crackle', 'Vitesse crépitement', { min: 0.04, max: 0.4, step: 0.01 });
+        this._range('elec_spark_rate', 'Fréquence étincelles (rafales/s)', { min: 0.3, max: 4, step: 0.1 });
+        this._range('elec_spark_amp', 'Amplitude étincelles', { min: 1, max: 9, step: 0.5 });
+        this._color('elec_color_charge', 'Couleur charge', null, 'auto — ex #ffd000');
+        this._color('elec_color_discharge', 'Couleur décharge', null, 'auto — ex #4D7CFF');
+      });
+    });
 
-    this._section('Couleurs');
-    this._color('color_accent', 'Accent', DEF_ACCENT);
-    this._color('color_bg', 'Fond', DEF_BG);
+    this._group('Couleurs', false, () => {
+      this._color('color_accent', 'Accent', DEF_ACCENT);
+      this._color('color_bg', 'Fond', DEF_BG);
+    });
   }
 }
 
