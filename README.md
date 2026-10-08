@@ -23,9 +23,7 @@ It works with **any** home battery that exposes a state-of-charge sensor and a p
 
 ## ✨ Features
 
-- **Two cards in one install**
-  - `storey-battery-card-gl`: electric joints rendered by a WebGL shader (recommended).
-  - `storey-battery-card`: lighter version, same look, arcs drawn in SVG.
+- `storey-battery-card-gl`: electric joints rendered by a WebGL shader.
 - **1 to 4 modules**, fixed in the config or read from a sensor. Capacity is shown as stored / total kWh (2.2 kWh per module).
 - **Dot-matrix panels** for SOC, power and direction, with an animated transition when a value changes.
 - **Full battery animation** above a configurable SOC threshold.
@@ -42,11 +40,13 @@ It works with **any** home battery that exposes a state-of-charge sensor and a p
 2. Download **Storey Battery Card**.
 3. Reload your browser.
 
-HACS registers one resource, `storey-battery-card.js`. It loads the WebGL variant on its own, so **do not** add `storey-battery-card-gl.js` as a second resource.
+HACS registers one resource, `storey-battery-card.js`. The card type is `custom:storey-battery-card-gl`.
+
+If you used the former CSS card (`custom:storey-battery-card`), change its type to `custom:storey-battery-card-gl`: the CSS version is no longer shipped.
 
 ### Manual
 
-1. Copy both files from [`dist/`](dist) to `config/www/storey-battery-card/`.
+1. Copy [`dist/storey-battery-card.js`](dist/storey-battery-card.js) to `config/www/storey-battery-card/`.
 2. Add a dashboard resource: URL `/local/storey-battery-card/storey-battery-card.js`, type **JavaScript module**.
 
 ## 🚀 Usage
@@ -108,7 +108,7 @@ The arc itself has about twenty `elec_*` settings (crackle speed, spark rate and
 
 **The arrow flickers between charging and discharging.** Raise `power_threshold`: small readings around zero then count as idle.
 
-**Some cards go blank on my Android phone.** Android WebViews keep at most 8 WebGL contexts per page. This card uses one, and gives it back when it leaves the screen. If you run many WebGL cards on one view, use `storey-battery-card` (SVG) on some of them.
+**Some cards go blank on my Android phone.** Android WebViews keep at most 8 WebGL contexts per page. This card uses one, and gives it back when it leaves the screen.
 
 **Which theme is in the screenshots?** Neo Tokyo, the author's own dark theme (not published). The card works with any theme.
 
