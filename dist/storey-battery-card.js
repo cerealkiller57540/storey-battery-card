@@ -1,4 +1,4 @@
-/* ── storey-battery-card-gl v17.5.1 — joint inter-module électrique (crépitement + sparks) ── */
+/* ── storey-battery-card-gl v17.5.2 — joint inter-module électrique (crépitement + sparks) ── */
 (() => {
   // Device detection — iPad/mobile : coupe les anims (SMIL + CSS) pour soulager le GPU.
   const SBC_IS_IPAD =
@@ -14,6 +14,10 @@
       '"': "&quot;",
       "'": "&#39;",
     })[ch]);
+  function _sbcSafeColor(v, fb) {
+    const s = String(v ?? '').trim();
+    return s && !/[;{}"'<>\\]/.test(s) ? s : (fb || '');
+  }
   // Retire les animations SVG SMIL (le CSS animation:none ne les coupe pas).
   const _sbcStripSmil = (svg) =>
     svg
@@ -1321,8 +1325,8 @@
       const accent = hasError
         ? ERR_RED
         : cyberpunk
-          ? this._config.color_accent || CP_ACCENT
-          : this._config.color_accent || DEF_ACCENT;
+          ? _sbcSafeColor(this._config.color_accent, CP_ACCENT)
+          : _sbcSafeColor(this._config.color_accent, DEF_ACCENT);
       const bg = cardModBg
         ? "transparent"
         : cyberpunk
@@ -1364,7 +1368,7 @@
       const ent0 = this._ent(this._config.module_0_entity);
       // GLITCH le chat sur l'écran du dessus (mascotte). Activé par défaut ; couleur
       // = glitch_color sinon l'accent. Passé à _stackContent → entre dans le cache.
-      const catCol = this._config.glitch_cat === false ? null : this._config.glitch_color || accent;
+      const catCol = this._config.glitch_cat === false ? null : _sbcSafeColor(this._config.glitch_color, accent);
       const batParts = [_stackContent(modules, showHandle, showGrille, catCol)];
       if (ent0) {
         batParts.push(
@@ -3298,7 +3302,7 @@ const _setLang = (h) => {
 })();
 
 console.info(
-  "%c 🔋 storey-battery-card-gl v17.5.1-gl %c Neo Tokyo WebGL ",
+  "%c 🔋 storey-battery-card-gl v17.5.2-gl %c Neo Tokyo WebGL ",
   "background:#FFD700;color:#000;padding:2px 4px;border-radius:3px 0 0 3px;font-weight:bold;",
   "background:#040811;color:#FF6A00;padding:2px 4px;border-radius:0 3px 3px 0;"
 );
