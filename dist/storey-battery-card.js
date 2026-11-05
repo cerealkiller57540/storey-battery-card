@@ -1,4 +1,4 @@
-/* ── storey-battery-card-gl v17.5.2 — joint inter-module électrique (crépitement + sparks) ── */
+/* ── storey-battery-card-gl v17.5.3 — joint inter-module électrique (crépitement + sparks) ── */
 (() => {
   // Device detection — iPad/mobile : coupe les anims (SMIL + CSS) pour soulager le GPU.
   const SBC_IS_IPAD =
@@ -1290,7 +1290,7 @@
     }
 
     _buildBrandIcon(accent) {
-      const size = this._config.header?.icon_size || 16;
+      const size = parseFloat(this._config.header?.icon_size) || 16;
       const icon = this._config.header?.icon || "";
       // Wrapper pour injection imperative de ha-icon si mdi
       if (icon.startsWith("mdi:")) {
@@ -1412,9 +1412,8 @@
         : isCharging
           ? "#ffd000"
           : "#4D7CFF";
-      const gcOverride = isCharging
-        ? this._config.elec_color_charge
-        : this._config.elec_color_discharge;
+      const gcOverride = _sbcSafeColor(
+        isCharging ? this._config.elec_color_charge : this._config.elec_color_discharge, "");
       const gc1 = hasError ? ERR_RED : gcOverride || gcDefault;
       const gc2 = hasError
         ? ERR_RED
@@ -1852,7 +1851,7 @@
       // Injection imperative ha-icon pour MDI
       if (d.iconWrap) {
         const icon = this._config.header?.icon || "";
-        const size = (this._config.header?.icon_size || 16) + "px";
+        const size = (parseFloat(this._config.header?.icon_size) || 16) + "px";
         if (icon.startsWith("mdi:") && d.iconWrap.style.display !== "none") {
           if (!d.iconWrap._haIcon) {
             const hi = document.createElement("ha-icon");
@@ -3289,6 +3288,26 @@ const _setLang = (h) => {
    *  REGISTRATION                                                              *
    * ═══════════════════════════════════════════════════════════════════════════ */
 
+  // Une valeur de config interpolée dans un <style> ne doit pas pouvoir le refermer.
+  function _sbcCfgSafe(v) {
+    if (typeof v === "string") return v.replace(/<\/(style)/gi, "<\\/$1");
+    if (!v || typeof v !== "object") return v;
+    const isArr = Array.isArray(v);
+    let out = v;
+    for (const k of Object.keys(v)) {
+      const nv = _sbcCfgSafe(v[k]);
+      if (nv !== v[k]) {
+        if (out === v) out = isArr ? v.slice() : { ...v };
+        out[k] = nv;
+      }
+    }
+    return out;
+  }
+  {
+    const _setCfg = StoreyBatteryCard.prototype.setConfig;
+    StoreyBatteryCard.prototype.setConfig = function (c) { return _setCfg.call(this, _sbcCfgSafe(c)); };
+  }
+
   customElements.define("storey-battery-card-gl", StoreyBatteryCard);
   customElements.define("storey-battery-card-gl-editor", StoreyBatteryCardEditor);
 
@@ -3302,7 +3321,7 @@ const _setLang = (h) => {
 })();
 
 console.info(
-  "%c 🔋 storey-battery-card-gl v17.5.2-gl %c Neo Tokyo WebGL ",
+  "%c 🔋 storey-battery-card-gl v17.5.3-gl %c Neo Tokyo WebGL ",
   "background:#FFD700;color:#000;padding:2px 4px;border-radius:3px 0 0 3px;font-weight:bold;",
   "background:#040811;color:#FF6A00;padding:2px 4px;border-radius:0 3px 3px 0;"
 );
